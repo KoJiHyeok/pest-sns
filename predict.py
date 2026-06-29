@@ -30,12 +30,22 @@ _kiwi = None
 # 남길 품사 prefix: 명사(NN*/NR/NP) · 동사/형용사(VV/VA/VX, 단 copula VC*는 제외) · 부사(MA*) · 외국어/숫자/어근
 _KEEP_TAGS = ("NNG", "NNP", "NNB", "NR", "NP", "VV", "VA", "VX", "MAG", "MAJ", "SL", "SH", "SN", "XR")
 _PRED_TERM_TAIL = r"(?=$|[\s.,!?~…]|[이가은는을를도과와에의만부터까지한테에게랑이며입니다인데으로로집])"
+_TERM_LEFT_BOUNDARY = r"(?<![0-9A-Za-z가-힣])"
+_LOVE_BUG_EN_PATTERN = re.compile(r"(?i)\blove\s*[-_ ]?\s*bugs?(?=$|[^A-Za-z])")
+_LOVE_BUG_REPORT_CONTEXT_RE = re.compile(
+    r"(많|발견|출현|불편|떼|붙|물렸|물리|가렵|빨갛|붓|기어다니|나왔|나오|봤|보였|"
+    r"생기|신고|때문|못\s*널|윙윙|살충제|방역|창문|빨래|얼굴|날아다|뒤덮|잔뜩|들끓)"
+)
+_LOVE_BUG_NON_REPORT_CONTEXT_RE = re.compile(
+    r"(뉴스|영화|노래|소문|검색|사진|기사|관련|책|다큐멘터리|게임|캐릭터|선물|밈|금리|"
+    r"대출|제목|모양|표현|배웠|배우|뜻|단어|영어|번역|문장|읽|듣|보내)"
+)
+_ENGLISH_LOVE_VERB_PATTERN = re.compile(r"(?i)\b(?:i|we|you|they|he|she)\s+love\s+bugs?(?=$|[^A-Za-z])")
 _NORMALIZE_RULES = (
     # 사용자가 띄어 쓰거나 영어로 입력한 해충명을 학습 vocab에 있는 표기로 맞춘다.
-    (re.compile(r"(?i)\blove\s*[-_ ]?\s*bugs?(?=$|[^A-Za-z])"), "러브버그"),
     (re.compile(r"러브\s*[-_ ]?\s*버그" + _PRED_TERM_TAIL), "러브버그"),
     (re.compile(r"말\s+벌" + _PRED_TERM_TAIL), "말벌"),
-    (re.compile(r"바퀴\s*벌레" + _PRED_TERM_TAIL), "바퀴벌레"),
+    (re.compile(_TERM_LEFT_BOUNDARY + r"바퀴\s*벌레" + _PRED_TERM_TAIL), "바퀴벌레"),
     (re.compile(r"진\s*드기" + _PRED_TERM_TAIL), "진드기"),
     (re.compile(r"빈\s*대" + _PRED_TERM_TAIL), "빈대"),
 )
@@ -55,14 +65,72 @@ _REPORT_CONTEXT_TOKENS = {
 _NON_REPORT_CONTEXT_TOKENS = {
     "뉴스", "영화", "노래", "소문", "검색", "사진", "기사", "관련", "책",
     "다큐멘터리", "게임", "캐릭터", "키", "링", "선물", "밈", "금리",
-    "대출", "제목", "모양", "읽", "듣", "보내",
+    "대출", "제목", "모양", "표현", "배우", "뜻", "단어", "영어", "번역",
+    "문장", "읽", "듣", "보내",
 }
 _LEXICAL_CONFIDENCE_FLOOR = 0.85
+_CONTEXT_OVERRIDE_CONFIDENCE = 0.90
+_EXPLICIT_COCKROACH_RE = re.compile(_TERM_LEFT_BOUNDARY + r"바퀴벌레" + _PRED_TERM_TAIL)
+_VEHICLE_WHEEL_RE = re.compile(r"(자동차|차량|승용차|트럭|버스|택시|오토바이|자전거|앞바퀴|뒷바퀴|바퀴|타이어|휠)")
+_GENERIC_INSECT_RE = re.compile(r"(벌레|곤충)")
+_STUCK_ON_WHEEL_RE = re.compile(r"(낌|꼈|끼었|끼어|끼고|끼|박혔|박히|붙었|붙어|붙|묻었|묻어|묻|깔렸|깔리|들어갔|들어가)")
+
+
+def _should_normalize_english_lovebug(text):
+    """영어 love bug(s)는 제보 문맥에서만 러브버그 해충명으로 합친다."""
+    if _ENGLISH_LOVE_VERB_PATTERN.search(text):
+        return False
+    if _LOVE_BUG_NON_REPORT_CONTEXT_RE.search(text):
+        return False
+    return bool(_LOVE_BUG_REPORT_CONTEXT_RE.search(text))
+
+
+def _contains_unmerged_english_lovebug(tokens):
+    lowered = {token.lower() for token in tokens}
+    return "lovebug" in lowered or ("love" in lowered and bool({"bug", "bugs"} & lowered))
+
+
+def _with_confidence_floor(probs, target_idx, floor):
+    if target_idx is None or float(probs[target_idx]) >= floor:
+        return probs
+
+    calibrated = probs.astype("float32", copy=True)
+    other_sum = float(np.sum(calibrated) - calibrated[target_idx])
+    if other_sum > 0:
+        scale = (1.0 - floor) / other_sum
+        for i in range(len(calibrated)):
+            if i != target_idx:
+                calibrated[i] *= scale
+    else:
+        calibrated.fill((1.0 - floor) / (len(calibrated) - 1))
+    calibrated[target_idx] = floor
+    return calibrated
+
+
+def _is_vehicle_wheel_insect_context(text):
+    """차량 바퀴에 일반 벌레가 낀 문장은 바퀴벌레 제보가 아니다."""
+    normalized = unicodedata.normalize("NFKC", str(text))
+    if _EXPLICIT_COCKROACH_RE.search(normalized):
+        return False
+    return (
+        bool(_VEHICLE_WHEEL_RE.search(normalized))
+        and bool(_GENERIC_INSECT_RE.search(normalized))
+        and bool(_STUCK_ON_WHEEL_RE.search(normalized))
+    )
+
+
+def apply_context_overrides(text, probs, label_map):
+    label_to_idx = {label: int(idx) for idx, label in label_map.items()}
+    if _is_vehicle_wheel_insect_context(text):
+        return _with_confidence_floor(probs, label_to_idx.get("none"), _CONTEXT_OVERRIDE_CONFIDENCE)
+    return probs
 
 
 def normalize_text(text):
     """사용자 입력 표기 변형을 모델 학습 표기로 정규화한다."""
     normalized = unicodedata.normalize("NFKC", str(text))
+    if _LOVE_BUG_EN_PATTERN.search(normalized) and _should_normalize_english_lovebug(normalized):
+        normalized = _LOVE_BUG_EN_PATTERN.sub("러브버그", normalized)
     for pattern, replacement in _NORMALIZE_RULES:
         normalized = pattern.sub(replacement, normalized)
     return normalized
@@ -75,32 +143,28 @@ def calibrate_probs(tokenized_text, probs, label_map):
     단순 키워드 매칭만으로 none 문맥을 망치지 않도록, 비제보 문맥 토큰이 있으면 보정하지 않는다.
     """
     tokens = set(tokenized_text.split())
-    if not tokens or tokens & _NON_REPORT_CONTEXT_TOKENS or not (tokens & _REPORT_CONTEXT_TOKENS):
+    if not tokens:
+        return probs
+
+    label_to_idx = {label: int(idx) for idx, label in label_map.items()}
+
+    if _contains_unmerged_english_lovebug(tokens):
+        if tokens & _NON_REPORT_CONTEXT_TOKENS or not (tokens & _REPORT_CONTEXT_TOKENS):
+            return _with_confidence_floor(probs, label_to_idx.get("none"), _LEXICAL_CONFIDENCE_FLOOR)
+        return _with_confidence_floor(probs, label_to_idx.get("lovebug"), _LEXICAL_CONFIDENCE_FLOOR)
+
+    if tokens & _NON_REPORT_CONTEXT_TOKENS or not (tokens & _REPORT_CONTEXT_TOKENS):
         return probs
 
     labels = {label for token, label in _PEST_TOKEN_TO_LABEL.items() if token in tokens}
     if len(labels) != 1:
         return probs
 
-    label_to_idx = {label: int(idx) for idx, label in label_map.items()}
     target_label = next(iter(labels))
     target_idx = label_to_idx.get(target_label)
     if target_idx is None or int(np.argmax(probs)) != target_idx:
         return probs
-    if float(probs[target_idx]) >= _LEXICAL_CONFIDENCE_FLOOR:
-        return probs
-
-    calibrated = probs.astype("float32", copy=True)
-    other_sum = float(np.sum(calibrated) - calibrated[target_idx])
-    if other_sum > 0:
-        scale = (1.0 - _LEXICAL_CONFIDENCE_FLOOR) / other_sum
-        for i in range(len(calibrated)):
-            if i != target_idx:
-                calibrated[i] *= scale
-    else:
-        calibrated.fill((1.0 - _LEXICAL_CONFIDENCE_FLOOR) / (len(calibrated) - 1))
-    calibrated[target_idx] = _LEXICAL_CONFIDENCE_FLOOR
-    return calibrated
+    return _with_confidence_floor(probs, target_idx, _LEXICAL_CONFIDENCE_FLOOR)
 
 
 def tokenize(text):
@@ -162,6 +226,7 @@ def predict(text, vectorizer, interp, label_map):
     interp.invoke()
     probs = interp.get_tensor(out["index"])[0]  # (클래스수,)
     probs = calibrate_probs(tokenized, probs, label_map)
+    probs = apply_context_overrides(text, probs, label_map)
 
     idx = int(np.argmax(probs))
     en = label_map[str(idx)]
