@@ -1,0 +1,8 @@
+streamlit==1.36.0
+pandas==2.2.2
+numpy==1.26.4
+requests==2.32.3
+# 모델 학습 및 TFLite 변환용
+tensorflow==2.16.1
+# Streamlit 앱에서 TensorFlow 전체 설치 없이 TFLite만 실행하고 싶을 때 선택 설치
+# tflite-runtime

@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 학습 산출물 (train_to_tflite.py 실행 시 자동 생성 — 재생성 가능)
+models/
+
+# 런타임 DB (app.py 실행 시 생성)
+pest_reports.db
+
+# streamlit 실행 로그
+streamlit.log
