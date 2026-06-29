@@ -64,8 +64,8 @@ if text.strip():
         .set_index("해충")
     )
     st.bar_chart(df, horizontal=True)
-    st.caption("⚠️ 학습 데이터(120문장)를 외운 데모 모델입니다. "
-               "학습에 없던 단어형엔 약할 수 있어요.")
+    st.caption("⚠️ 학습 데이터(175문장) 기반 데모 모델입니다. 한국어 형태소 토큰화로 "
+               "조사·어순 변형엔 강하지만, 학습 분포에서 크게 벗어난 표현엔 약할 수 있어요.")
 
     # ── 예방 가이드 (리서치 연동) ──
     if en == "none":
@@ -82,4 +82,4 @@ if text.strip():
                                ("기피성분", "repellent")]:
                 if info.get(key):
                     st.markdown(f"- **{label}**: {info[key]}")
-            st.caption("출처: research/새 텍스트 문서.md")
+            st.caption(f"출처: {info.get('source') or 'research/새 텍스트 문서.md'}")

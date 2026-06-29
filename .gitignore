@@ -9,5 +9,8 @@ models/
 # 런타임 DB (app.py 실행 시 생성)
 pest_reports.db
 
-# streamlit 실행 로그
-streamlit.log
+# 실행 로그
+*.log
+
+# HF Spaces 업로드용 staging (deploy-hf/deploy.py 가 재생성)
+.hfspace/

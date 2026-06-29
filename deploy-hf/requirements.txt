@@ -1,0 +1,6 @@
+# 해충 제보 데모 HF Space 이미지 의존성 (Python 3.11) — 추론 서버 전용.
+# tensorflow-cpu 로 이미지 경량화(전체 tensorflow 대비 GPU 미포함, tf.lite/keras 전처리는 그대로).
+# kiwipiepy 는 형태소 모델을 pip 로 동봉 → 런타임 네트워크 불필요.
+tensorflow-cpu==2.21.0
+flask==3.1.3
+kiwipiepy==0.23.2

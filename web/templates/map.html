@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>해충 제보 — 지도</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="screen screen-map">
+
+        <div class="head">
+          <div class="htop">
+            <div class="brand">해충 제보</div>
+            <div class="seg">
+              <a class="segb" href="/">제보</a>
+              <a class="segb segb-on" href="/map">지도</a>
+            </div>
+          </div>
+          <div class="chips">
+            <div class="chip chip-on">오늘</div>
+            <div class="chip">전체 해충</div>
+            <div class="chip">위험 높음만</div>
+          </div>
+        </div>
+
+        <div class="map">
+          <div id="kakaomap" class="kakaomap"></div>
+
+          <div id="placeholder" class="placeholder">
+            <div class="wm">지도 미리보기 · Kakao 키를 넣으면 실제 지도로 전환</div>
+            <div class="mk mk-lo" style="top:22%; left:71%;">1</div>
+            <div class="mk mk-mid" style="top:29%; left:27%;">2</div>
+            <div class="mk mk-mid" style="top:45%; left:76%;">2</div>
+            <div class="mk mk-lo" style="top:48%; left:31%;">1</div>
+            <div class="mk mk-hi mk-sel" style="top:38%; left:51%;">3<span class="mktag">수원역 · 말벌</span></div>
+          </div>
+
+          <div class="keybar" id="keybar">
+            <input id="keyinput" class="keyinput" type="text" placeholder="Kakao JavaScript 키 붙여넣기" />
+            <button id="keyapply" class="keyapply" type="button">적용</button>
+          </div>
+          <div class="keyhint" id="keyhint">Kakao Developers → 내 앱 → <b>JavaScript 키</b> · 플랫폼 Web 도메인에 <b>http://127.0.0.1:8600</b> 등록 필요</div>
+          <button id="keyreset" class="keyreset" type="button" style="display:none;">키 변경</button>
+
+          <div class="legend">
+            <div class="lg"><span class="lgdot" style="background:#2E7D5B;"></span>낮음</div>
+            <div class="lg"><span class="lgdot" style="background:#C77D27;"></span>중간</div>
+            <div class="lg"><span class="lgdot" style="background:#C0352B;"></span>높음</div>
+          </div>
+        </div>
+
+        <div class="sheet">
+          <div class="handle"></div>
+          <div class="selrow">
+            <div>
+              <div class="selname" id="selname">제보 지도</div>
+              <div class="selmeta" id="selmeta">키를 넣으면 실제 제보 데이터로 채워집니다</div>
+            </div>
+            <div class="risk risk-none" id="selrisk">대기</div>
+          </div>
+          <div class="hint" id="selhint">상단에 Kakao JavaScript 키를 입력하면 지역별 제보 마커가 표시됩니다.</div>
+          <div>
+            <div class="listlab">다른 지역 제보</div>
+            <div class="list" id="reportlist">
+              <div class="li li-last"><span class="lidot" style="background:#C7D2CC;"></span><span class="lic"><span class="lit">키 입력 대기 중</span><span class="lis">—</span></span><span class="litime"></span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <script>
+      window.KAKAO_JS_KEY = {{ kakao_js_key|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='map.js') }}"></script>
+  </body>
+</html>

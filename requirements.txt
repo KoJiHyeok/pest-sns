@@ -2,6 +2,8 @@ streamlit==1.36.0
 pandas==2.2.2
 numpy==1.26.4
 requests==2.32.3
+# 한국어 형태소 토큰화 (조사·어미 분리). 모델 파일이 pip로 동봉돼 오프라인 동작.
+kiwipiepy==0.23.2
 # 모델 학습 및 TFLite 변환용
 tensorflow==2.16.1
 # Streamlit 앱에서 TensorFlow 전체 설치 없이 TFLite만 실행하고 싶을 때 선택 설치

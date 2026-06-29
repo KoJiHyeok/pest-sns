@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>해충 제보</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="screen">
+        <div class="pad">
+
+          <div class="top">
+            <div class="brand">해충 제보</div>
+            <div class="seg">
+              <a class="segb segb-on" href="/">제보</a>
+              <a class="segb" href="/map">지도</a>
+            </div>
+          </div>
+
+          <div class="inputarea">
+            <div class="qlabel">무엇을 보셨나요?</div>
+            <textarea id="text" class="input" rows="2" placeholder="예: 수원역에서 말벌 때문에 불편합니다"></textarea>
+            <div class="examples">
+              <button class="ex" type="button">수원역에서 말벌 때문에 불편합니다</button>
+              <button class="ex" type="button">여의도공원에서 모기 때문에 불편합니다</button>
+              <button class="ex" type="button">광화문에서 러브버그 발견</button>
+            </div>
+            <button id="go" class="btn btn-primary" type="button">AI로 분석</button>
+          </div>
+
+          <div id="result"></div>
+
+          <div class="foot">데모 · 학습 데이터 175문장 기반 분류</div>
+
+        </div>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
