@@ -1,11 +1,40 @@
 # 해충 제보 데모
 
-한국어 SNS 제보 문장을 입력하면 해충 종류를 분류하고, 예방 가이드와 지역별 제보 지도를 보여주는 데모 앱입니다.
+한국어 SNS 제보 문장 한 줄을 입력하면 **① 무슨 해충 · ② 어떤 행동(긴급·신고·안내) · ③ 어디(관할 보건소) 연락**까지 판단해 대응 가이드와 지역 지도를 돌려주는 경량 방역 추천 데모입니다. 추론 핵심은 오프라인으로 도는 **2개의 작은 TFLite 텍스트 분류 모델**(각 ~70KB)입니다.
 
-- 텍스트 분류: Kiwi 형태소 분석 + TensorFlow Lite
-- 웹 앱: Flask
+- 텍스트 분류: Kiwi 형태소 분석 + TensorFlow Lite (pest 7종 · action 4종)
+- 방역 추천: 이음새 보정(`advisory`) + 지역 해소(룰→캐시→Kakao) + 전국 보건소 룩업(224 시군구)
+- 웹 앱: Flask — **8600 분석앱+지도** · **8700 방역 챗**
 - 지도: Kakao Maps JavaScript SDK
 - 배포: Hugging Face Spaces Docker
+
+## 아키텍처 / 파이프라인
+
+문장 한 줄이 응답이 되기까지. pest·action 두 모델이 병렬로 판단하고, 이음새 보정으로 합친 뒤 지역·보건소를 붙입니다.
+
+```mermaid
+flowchart TD
+    U["사용자 문장 한 줄"] --> P["① pest 분류<br/>predict.py · TFLite · 7종"]
+    U --> A["② action 분류<br/>action_predict.py · TFLite · 4종"]
+    P --> S["이음새 보정<br/>advisory.correct_seam"]
+    A --> S
+    S --> R["③ 지역 해소<br/>region_resolve<br/>룰 → 캐시 → Kakao"]
+    R --> C["④ 추천 결합<br/>recommend.py"]
+    C --> O["관할 보건소<br/>offices_db · 224 시군구"]
+    O --> OUT["응답<br/>해충 · 행동 · 보건소 · 가이드"]
+    OUT --> CHAT["8700 방역 챗 · /chat"]
+    OUT --> MAP["8600 분석앱 + 지도<br/>/api/predict · /map"]
+```
+
+| 단계 | 하는 일 | 담당 |
+|------|---------|------|
+| ① pest | 문장 → 해충 7종(모기·바퀴·러브버그·말벌·진드기·빈대·none) | `predict.py` + tflite |
+| ② action | 문장 → 행동 4종(emergency·dispatch·guide·none) | `action_predict.py` + tflite |
+| 이음새 | 두 모델 판단 충돌 보정(false-none 복구 등) | `advisory.py` |
+| ③ region | 문장 → 시군구 (룰→캐시→Kakao, 좌표가 진실) | `region_resolve.py` |
+| ④ recommend | 해충+행동+지역 → 보건소+대응 가이드 | `recommend.py` · `offices_db.py` |
+
+> 모델 추론은 **완전 오프라인**입니다. 처음 보는 장소의 위치 해소만 1회 온라인(Kakao)이고, 이후 `geocode.json`에 캐시돼 오프라인으로 동작합니다.
 
 ## 주요 기능
 

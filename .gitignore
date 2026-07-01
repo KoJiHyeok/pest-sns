@@ -17,3 +17,7 @@ pest_reports.db
 
 # HF Spaces 업로드용 staging (deploy-hf/deploy.py 가 재생성)
 .hfspace/
+
+# 내부 작업 노트·스크래치 (공개 repo 제외)
+briefs/
+web/_backup_dark/
