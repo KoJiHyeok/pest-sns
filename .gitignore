@@ -3,6 +3,9 @@ __pycache__/
 *.pyc
 .venv/
 
+# 로컬 키 (절대 커밋 금지 — .env.example 만 커밋)
+.env
+
 # 학습 산출물 (train_to_tflite.py 실행 시 자동 생성 — 재생성 가능)
 models/
 

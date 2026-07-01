@@ -23,6 +23,12 @@
             <div class="chip">전체 해충</div>
             <div class="chip">위험 높음만</div>
           </div>
+          <div class="searchrow" id="searchbar" style="display:none;">
+            <input id="placeinput" class="searchinput" type="text" autocomplete="off"
+                   placeholder="장소 검색 — 예: 호서대 천안캠퍼스, 강남역" />
+            <button id="placesearch" class="searchbtn" type="button">검색</button>
+          </div>
+          <div class="searchmsg" id="searchmsg" style="display:none;"></div>
         </div>
 
         <div class="map">
@@ -51,8 +57,8 @@
           </div>
         </div>
 
-        <div class="sheet">
-          <div class="handle"></div>
+        <div class="sheet" id="sheet">
+          <button class="grip" id="sheetGrip" type="button" aria-label="제보 패널 펼치기/접기"><span class="handle"></span></button>
           <div class="selrow">
             <div>
               <div class="selname" id="selname">제보 지도</div>

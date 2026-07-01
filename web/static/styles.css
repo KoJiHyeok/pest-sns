@@ -101,6 +101,15 @@ html, body { margin: 0; }
 .chip { height: 34px; padding: 0 13px; border-radius: 999px; display: flex; align-items: center; font-size: 12px; font-weight: 600; background: #FFFFFF; border: 1px solid #DEE3E1; color: #46544C; }
 .chip-on { background: #1E6B57; border-color: #1E6B57; color: #FFFFFF; }
 
+/* 장소 검색란 (헤더, 필터 칩 아래) */
+.searchrow { display: flex; gap: 8px; }
+.searchinput { flex: 1; min-width: 0; border: 1px solid #DEE3E1; border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 13px; color: #222B27; background: #FBFCFC; }
+.searchinput:focus { outline: none; border-color: #1E6B57; }
+.searchbtn { background: #1E6B57; color: #FFFFFF; border: none; border-radius: 10px; padding: 0 16px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.searchbtn:hover { background: #1A5E4C; }
+.searchmsg { font-size: 12px; color: #B23A2F; padding: 1px 2px 0; }
+.searchpin { font-size: 30px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(20,30,25,.35)); pointer-events: none; }
+
 .map { position: relative; flex: 1; background-color: #EAEDEB; background-image: linear-gradient(#DFE4E1 1px, transparent 1px), linear-gradient(90deg, #DFE4E1 1px, transparent 1px); background-size: 38px 38px; overflow: hidden; }
 .wm { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 600; color: #8E988F; background: rgba(255,255,255,.72); padding: 5px 11px; border-radius: 999px; max-width: 90%; text-align: center; }
 .legend { position: absolute; top: 46px; right: 14px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 3px 10px rgba(20,30,25,.12); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
@@ -113,8 +122,12 @@ html, body { margin: 0; }
 .mk-sel { width: 48px; height: 48px; font-size: 16px; box-shadow: 0 0 0 6px rgba(192,53,43,.18), 0 6px 14px rgba(20,30,25,.28); }
 .mktag { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: #FFFFFF; color: #222B27; font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; box-shadow: 0 3px 8px rgba(20,30,25,.16); }
 
-.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: #FFFFFF; border-radius: 22px 22px 30px 30px; box-shadow: 0 -8px 30px rgba(20,30,25,.14); padding: 10px 18px 22px; display: flex; flex-direction: column; gap: 14px; }
-.handle { width: 40px; height: 5px; border-radius: 999px; background: #DDE2E0; align-self: center; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: #FFFFFF; border-radius: 22px 22px 30px 30px; box-shadow: 0 -8px 30px rgba(20,30,25,.14); padding: 10px 18px 22px; display: flex; flex-direction: column; gap: 14px; transition: transform .28s cubic-bezier(.4,0,.2,1); will-change: transform; }
+/* 회색 바 = 펼치기/접기 토글(탭 영역 넉넉히). 안의 .handle 이 보이는 막대. */
+.grip { width: 100%; background: none; border: none; padding: 8px 0 8px; margin: -6px 0 -2px; display: flex; justify-content: center; cursor: grab; touch-action: none; }
+.grip:active { cursor: grabbing; }
+.handle { width: 40px; height: 5px; border-radius: 999px; background: #DDE2E0; display: block; transition: background .15s ease; }
+.grip:hover .handle { background: #C3CBC7; }
 .selrow { display: flex; align-items: flex-start; justify-content: space-between; }
 .selname { font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
 .selmeta { font-size: 12px; color: #7C877F; margin-top: 5px; }
@@ -139,7 +152,11 @@ html, body { margin: 0; }
 .keyapply { background: #1E6B57; color: #FFFFFF; border: none; border-radius: 8px; padding: 0 16px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .keyhint { position: absolute; top: 62px; left: 14px; right: 14px; z-index: 6; font-size: 11px; line-height: 1.5; color: #46544C; background: rgba(255,255,255,.9); border-radius: 8px; padding: 7px 10px; }
 .keyreset { position: absolute; top: 14px; left: 14px; z-index: 6; background: #FFFFFF; border: 1px solid #DEE3E1; border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 12px; font-weight: 600; color: #46544C; cursor: pointer; }
-.kmk { width: 38px; height: 38px; border-radius: 50%; border: 3px solid #FFFFFF; box-shadow: 0 4px 10px rgba(20,30,25,.3); display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 14px; font-weight: 800; }
+.kmk { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #FFFFFF; box-shadow: 0 2px 6px rgba(20,30,25,.3); display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 12px; font-weight: 800; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.kmk:hover { transform: scale(1.45); box-shadow: 0 4px 12px rgba(20,30,25,.4); z-index: 10; }
+/* 클러스터 뱅글 — 색(위험도)·크기는 map.js 가 인라인으로 지정. 여기선 모양·후광만. */
+.kmc { border-radius: 50%; border: 2px solid #FFFFFF; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-weight: 800; cursor: pointer; box-shadow: 0 0 0 5px rgba(255,255,255,.45), 0 3px 10px rgba(20,30,25,.32); transition: transform .12s ease; }
+.kmc:hover { transform: scale(1.08); }
 
 /* 해충 드롭다운 */
 .ddmenu { position: absolute; z-index: 20; min-width: 158px; background: #FFFFFF; border: 1px solid #E3E7E5; border-radius: 12px; box-shadow: 0 10px 26px rgba(20,30,25,.18); padding: 6px; display: none; }

@@ -1,0 +1,112 @@
+[
+  {
+    "id": 50001,
+    "text": "두정 도서관에서 러브 버그 출몰",
+    "pest_label": "lovebug",
+    "location": "두정도서관",
+    "location_input": "두정 도서관",
+    "lat": 36.8345467,
+    "lng": 127.1346506,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50002,
+    "text": "천안역에 진드기 다수 출몰",
+    "pest_label": "tick",
+    "location": "천안역",
+    "location_input": "천안역",
+    "lat": 36.815999,
+    "lng": 127.114645,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50003,
+    "text": "서울 코엑스에 말벌 출연",
+    "pest_label": "wasp",
+    "location": "코엑스",
+    "location_input": "서울 코엑스",
+    "lat": 37.5118733,
+    "lng": 127.0591105,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50004,
+    "text": "지금 호서대학교 천안캠퍼스에 말벌이 바글바글해",
+    "pest_label": "wasp",
+    "location": "호서대학교 천안캠퍼스",
+    "location_input": "호서대학교 천안캠퍼스",
+    "lat": 36.8275636,
+    "lng": 127.1831356,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50005,
+    "text": "단국대 죽전캠퍼스인데 지금 창문에 말벌이 득실거려요",
+    "pest_label": "wasp",
+    "location": "단국대 죽전캠퍼스",
+    "location_input": "단국대 죽전캠퍼스",
+    "lat": 37.319288,
+    "lng": 127.1289665,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50006,
+    "text": "서울대학교 인근 고깃집인데요. 말벌들 때문에 나가지를 못하고 있어요.",
+    "pest_label": "wasp",
+    "location": "서울특별시",
+    "location_input": "서울특별시",
+    "lat": 37.5666791,
+    "lng": 126.9782914,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50007,
+    "text": "광화문에서 러브버그 발견",
+    "pest_label": "lovebug",
+    "location": "광화문",
+    "location_input": "광화문",
+    "lat": 37.5759194,
+    "lng": 126.9768156,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50008,
+    "text": "단국대 죽전캠퍼스 창문에 말벌들이 득실거려요.",
+    "pest_label": "wasp",
+    "location": "단국대 죽전캠퍼스",
+    "location_input": "단국대 죽전캠퍼스",
+    "lat": 37.321920308014924,
+    "lng": 127.12659216013822,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50009,
+    "text": "호서대학교 아산 캠퍼스에 말벌집이 너무 많아요",
+    "pest_label": "wasp",
+    "location": "호서대학교 아산캠퍼스",
+    "location_input": "호서대학교 아산 캠퍼스",
+    "lat": 36.73651006205298,
+    "lng": 127.0744822903379,
+    "minutes_ago": 0,
+    "source": "user"
+  },
+  {
+    "id": 50010,
+    "text": "단국대 천안캠퍼스 창문에 말벌떼가 득실거립니다.",
+    "pest_label": "wasp",
+    "location": "충청남도 천안시",
+    "location_input": "천안시",
+    "lat": 36.8150283,
+    "lng": 127.1140654,
+    "minutes_ago": 0,
+    "source": "user"
+  }
+]

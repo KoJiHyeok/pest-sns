@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>해충 방역 추천 챗</title>
+  <link rel="stylesheet" href="chat.css" />
+</head>
+<body>
+  <main class="screen">
+    <header class="top">
+      <span class="dot"></span>
+      <span class="brand">방역 추천 도우미</span>
+      <span class="sub">해충 상황을 알려주세요</span>
+    </header>
+
+    <div class="feed" id="feed" aria-live="polite"></div>
+
+    <div class="examples" id="examples">
+      <button class="ex" type="button">단국대 천안캠에 말벌집이 생겼어요</button>
+      <button class="ex" type="button">요즘 러브버그 너무 많은데 어떻게 없애요?</button>
+      <button class="ex" type="button">오늘 점심 뭐 먹지</button>
+    </div>
+
+    <form class="composer" id="composer">
+      <textarea class="field" id="field" rows="1" placeholder="상황을 입력하세요…" autocomplete="off"></textarea>
+      <button class="send" id="send" type="submit" aria-label="전송">↑</button>
+    </form>
+  </main>
+
+  <script src="chat.js"></script>
+</body>
+</html>
